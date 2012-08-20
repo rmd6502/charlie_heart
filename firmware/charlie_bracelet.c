@@ -21,3 +21,5 @@ void main() {
     }
 }
 
+void initialize(void) {
+}

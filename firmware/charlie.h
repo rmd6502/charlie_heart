@@ -1,3 +1,13 @@
 // Copyright (c) 2012 Robert M. Diamond All Rights Reserved.
 //
-void charlie_init(int num_rows, int num_columns);
+
+static const unsigned int SHADES = 16;
+
+typedef struct _LedPins {
+    uint8_t highpin;
+    uint8_t lowpin;
+} LedPins;
+
+void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins);
+
+extern volatile uint8_t *buffer;
