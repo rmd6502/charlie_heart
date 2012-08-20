@@ -1,0 +1,13 @@
+.DS_Store
+*.o
+*.elf
+*.hex
+*.map
+*.d
+*.s#*
+*.b#*
+*.dsn
+*.scr
+*.eps
+*.pdf
+*.zip
