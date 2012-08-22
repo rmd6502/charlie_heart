@@ -1,10 +1,7 @@
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/sleep.h>
 
 #include "charlie.h"
-
-volatile unsigned long timer;
 
 void initialize(void);
 
@@ -22,4 +19,7 @@ void main() {
 }
 
 void initialize(void) {
+    // initialize charlieplexing
+    LedPins ledPins[20];
+    charlie_init(1,20,ledPins);
 }
