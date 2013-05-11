@@ -10,6 +10,12 @@ volatile uint8_t buffer[NUM_PINS] = {0};
 
 void initialize(void);
 
+int8_t mod(int8_t q, int8_t d) {
+    int8_t r = q % d;
+    if (r < 0) r += d;
+    return r;
+}
+
 int main() {
     uint16_t last_cycle_count = 0;
     // state goes from 0 to 21
@@ -20,21 +26,21 @@ int main() {
     while(1) {
         // test condition requiring userland access
         
-            if (state >= 4) buffer[state - 4] = 0;
-            if (state >= 3) buffer[state - 3] = 4;
-            if (state >= 2) buffer[state - 2] = 9;
-            if (state >= 1) buffer[state - 1] = 15;
-            if (state < 20) buffer[state] = 9;
+            buffer[mod(state - 4,20)] = 0;
+            if (state > 3) buffer[mod(state - 3,20)] = 4;
+            if (state > 2) buffer[mod(state - 2,20)] = 9;
+            if (state > 1) buffer[mod(state - 1,20)] = 15;
+            if (state < 20) buffer[mod(state,20)] = 9;
             if (state < 19) buffer[state+1] = 4;
             if (state < 18) buffer[state+2] = 0;
 
             state += dir;
-            if (state == 0 || state == 20) {
+            if (state == -1 || state == 20) {
                 dir = -dir;
             }
         
         //buffer[0] = state;
-        while (count < 3) {
+        while (count < 2) {
 			uint16_t shadow_cycle_count = cycle_count;
 			last_cycle_count = shadow_cycle_count;
 			
