@@ -3,54 +3,68 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
+#include <string.h>
 #include <stdlib.h>
 #include "charlie.h"
 
 // buffer bytes, only lower 4 bits are significant
-volatile uint8_t *buffer;
+static volatile uint8_t *buffer;
 
-volatile uint8_t timer = 0;
-uint8_t num_rows, num_columns;
+static volatile uint8_t timer = 0;
+static volatile uint8_t num_rows, num_columns;
+static volatile uint8_t *bufPtr = 0;
+static volatile LedPins *ledPtr = 0;
+volatile uint16_t cycle_count;
 
-LedPins *ledPins;
+static volatile LedPins *ledPins;
 
-void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins) {
+void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer) {
     // setup the buffer
     num_rows = _num_rows;
     num_columns = _num_columns;
     ledPins = led_pins;
-    buffer = (uint8_t *)calloc(num_rows,  num_columns);
+    buffer = _buffer;
 
     // initialize the timer and interrupt
     TCNT1 = 0;
     OCR1A = 255;
     cli();
-    // interrupt at count 256, so 7812.5 hz interrupt
+    // interrupt at count 16, so 62.5khz interrupt
     TIMSK |= _BV(TOIE1);
     TIFR = _BV(TOV1);
     // Start the timer at PCK/4, so 2 MHz timer clock
-    // with 16 shades, that means ~488 frames/sec
-    // and the interrupt routine has 1024 cycles to run, including interrupt and gcc overhead
-    TCCR1 = (3 << CS10);
+    // with 16 shades, that means 7812.5 frames/sec
+    // and the interrupt routine has 256 cycles to run, including interrupt and gcc overhead
+    TCCR1 = (2 << CS10);
+
+    bufPtr = (uint8_t *)buffer + num_rows * num_columns;
+    ledPtr = ledPins + num_rows * num_columns;
+    timer = 15;
+	cycle_count = 0;
+
     sei();
 }
 
 ISR(TIMER1_OVF_vect) {
-    volatile uint8_t *bufPtr = buffer;
-    LedPins *ledPtr = ledPins;
-    for (uint8_t i=0; i < num_rows; ++i) {
-        for (uint8_t j=0; j < num_columns; ++j) {
-            if (*bufPtr >= timer) {
-                DDRB = _BV(ledPtr->highpin) | _BV(ledPtr->lowpin);
-                PORTB = _BV(ledPtr->highpin);
-            } else {
-                DDRB = 0;
-                PORTB = 0;
-            }
-            ++bufPtr;
-            ++ledPtr;
+
+    --bufPtr;
+    --ledPtr;
+
+    if (*bufPtr >= timer) {
+        DDRB = _BV(ledPtr->highpin) | _BV(ledPtr->lowpin);
+        PORTB = _BV(ledPtr->highpin);
+    } else {
+        DDRB = 0;
+        PORTB = 0;
+    }
+
+    if (bufPtr == buffer) {
+        bufPtr = (uint8_t *)buffer + num_rows * num_columns;
+        ledPtr = ledPins + num_rows * num_columns;
+        --timer;
+        if (timer == 0) {
+	        timer = 15;
+	        ++cycle_count;
         }
     }
-    ++timer;
-    if (timer == 16) timer = 0;
 }

@@ -3,6 +3,7 @@
 ###############################################################################
 
 ## General Flags
+#PROJECT = charlie_test2
 PROJECT = charlie_bracelet
 MCU = attiny45
 TARGET = $(PROJECT).elf
