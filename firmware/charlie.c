@@ -25,27 +25,30 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     ledPins = led_pins;
     buffer = _buffer;
 
-    // initialize the timer and interrupt
-    TCNT1 = 0;
-    OCR1A = 255;
-    cli();
-    // interrupt at count 16, so 62.5khz interrupt
-    TIMSK |= _BV(TOIE1);
-    TIFR = _BV(TOV1);
-    // Start the timer at PCK/4, so 2 MHz timer clock
-    // with 16 shades, that means 7812.5 frames/sec
-    // and the interrupt routine has 256 cycles to run, including interrupt and gcc overhead
-    TCCR1 = (2 << CS10);
-
     bufPtr = (uint8_t *)buffer + num_rows * num_columns;
     ledPtr = ledPins + num_rows * num_columns;
     timer = 15;
 	cycle_count = 0;
 
+    PRR = ~(_BV(PRTIM0));
+
+    cli();
+    // initialize the timer and interrupt
+    TCNT0 = 0;
+    OCR0A = 63;
+    // interrupt at count 16, so 62.5khz interrupt
+    TIMSK |= _BV(OCIE0A);
+    TIFR = _BV(OCF0A);
+    // Start the timer at PCK/4, so 2 MHz timer clock
+    // with 16 shades, that means 7812.5 frames/sec
+    // and the interrupt routine has 256 cycles to run, including interrupt and gcc overhead
+    TCCR0A = (2 << WGM00);
+    TCCR0B = (2 << CS00);
+
     sei();
 }
 
-ISR(TIMER1_OVF_vect) {
+ISR(TIMER0_COMPA_vect) {
 
     --bufPtr;
     --ledPtr;
