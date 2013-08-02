@@ -5,7 +5,7 @@
 ## General Flags
 #PROJECT = charlie_test2
 PROJECT = charlie_bracelet
-MCU = attiny45
+MCU = attiny85
 TARGET = $(PROJECT).elf
 CC = avr-gcc
 
@@ -26,6 +26,16 @@ ASMFLAGS += -x assembler-with-cpp -Wa,-gdwarf2
 LDFLAGS = $(COMMON)
 LDFLAGS +=  -Wl,-Map=$(PROJECT).map
 
+## Programmer settings
+AVRDUDE = avrdude
+PROGRAMMER = dragon_isp
+ifeq ($(PART),)
+	ifeq ($(MCU),attiny85)
+		PART=t85
+	else ifeq ($(MCU),attiny45)
+		PART=t45
+	     endif
+endif
 
 ## Intel Hex file production flags
 HEX_FLASH_FLAGS = -R .eeprom
@@ -67,6 +77,15 @@ $(TARGET): $(OBJECTS)
 size: ${TARGET}
 	@echo
 	@avr-size ${TARGET}
+
+flash: ${TARGET}
+	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U flash:w:$(PROJECT).hex
+
+fuse:
+	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+
+program: fuse flash
+	@echo All done!
 
 ## Clean target
 .PHONY: clean
