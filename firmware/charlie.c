@@ -36,7 +36,7 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     // initialize the timer and interrupt
     TCNT0 = 0;
     OCR0A = 63;
-    // interrupt at count 16, so 62.5khz interrupt
+    // interrupt at count 63, so 32khz interrupt
     TIMSK |= _BV(OCIE0A);
     TIFR = _BV(OCF0A);
     // Start the timer at PCK/4, so 2 MHz timer clock

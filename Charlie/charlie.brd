@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.0">
+<eagle version="6.4">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -85,6 +85,7 @@
 <layer number="125" name="_tNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="144" name="Drill_legend" color="7" fill="1" visible="no" active="yes"/>
 <layer number="151" name="HeatSink" color="7" fill="1" visible="no" active="yes"/>
+<layer number="199" name="Contour" color="7" fill="1" visible="no" active="yes"/>
 <layer number="200" name="200bmp" color="1" fill="10" visible="no" active="yes"/>
 <layer number="201" name="201bmp" color="2" fill="10" visible="no" active="yes"/>
 <layer number="202" name="202bmp" color="3" fill="10" visible="no" active="yes"/>
@@ -235,6 +236,47 @@ Source: http://www.osram.convergy.de/ ... lb_r99a.pdf</description>
 </package>
 </packages>
 </library>
+<library name="transistor-fet">
+<description>&lt;b&gt;Field Effect Transistors&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;&lt;p&gt;
+&lt;p&gt;
+Symbols changed according to IEC617&lt;p&gt; 
+All types, packages and assignment to symbols and pins checked&lt;p&gt;
+Package outlines partly checked&lt;p&gt;
+&lt;p&gt;
+JFET = junction FET&lt;p&gt;
+IGBT-x = insulated gate bipolar transistor&lt;p&gt;
+x=N: NPN; x=P: PNP&lt;p&gt;
+IGFET-mc-nnn; (IGFET=insulated gate field effect transistor)&lt;P&gt;
+m=D: depletion mode (Verdr&amp;auml;ngungstyp)&lt;p&gt;
+m=E: enhancement mode (Anreicherungstyp)&lt;p&gt;
+c: N=N-channel; P=P-Channel&lt;p&gt;
+GDSB: gate, drain, source, bulk&lt;p&gt;
+&lt;p&gt;
+by R. Vogg  15.March.2002</description>
+<packages>
+<package name="SC75_INFINEON">
+<description>&lt;b&gt;Small Outline Transistor&lt;/b&gt; Reflow soldering&lt;p&gt;
+INFINEON, www.infineon.com/cmc_upload/0/000/010/257/eh_db_5b.pdf</description>
+<wire x1="-0.7" y1="0.3" x2="-0.45" y2="0.3" width="0.2032" layer="21"/>
+<wire x1="-0.45" y1="0.3" x2="0.45" y2="0.3" width="0.2032" layer="51"/>
+<wire x1="0.45" y1="0.3" x2="0.7" y2="0.3" width="0.2032" layer="21"/>
+<wire x1="0.7" y1="0.3" x2="0.7" y2="-0.15" width="0.2032" layer="21"/>
+<wire x1="0.7" y1="-0.15" x2="0.7" y2="-0.3" width="0.2032" layer="51"/>
+<wire x1="0.7" y1="-0.3" x2="-0.7" y2="-0.3" width="0.2032" layer="51"/>
+<wire x1="-0.7" y1="-0.3" x2="-0.7" y2="-0.15" width="0.2032" layer="51"/>
+<wire x1="-0.7" y1="-0.15" x2="-0.7" y2="0.3" width="0.2032" layer="21"/>
+<smd name="1" x="-0.5" y="-0.575" dx="0.4" dy="0.65" layer="1"/>
+<smd name="2" x="0" y="0.575" dx="0.4" dy="0.65" layer="1"/>
+<smd name="3" x="0.5" y="-0.575" dx="0.4" dy="0.65" layer="1"/>
+<text x="-0.8" y="1" size="1.27" layer="25">&gt;NAME</text>
+<text x="-0.8" y="-2.3" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="-0.6" y1="-0.8" x2="-0.4" y2="-0.35" layer="51"/>
+<rectangle x1="0.4" y1="-0.8" x2="0.6" y2="-0.35" layer="51"/>
+<rectangle x1="-0.1" y1="0.35" x2="0.1" y2="0.8" layer="51"/>
+</package>
+</packages>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -244,7 +286,7 @@ Source: http://www.osram.convergy.de/ ... lb_r99a.pdf</description>
 <class number="0" name="default" width="0" drill="0">
 </class>
 </classes>
-<designrules>
+<designrules name="default">
 <description language="de">&lt;b&gt;EAGLE Design Rules&lt;/b&gt;
 &lt;p&gt;
 Die Standard-Design-Rules sind so gewählt, dass sie für 
@@ -455,6 +497,7 @@ design rules under a new name.</description>
 <element name="R5" library="rcl" package="R0805" value="3" x="109.04" y="16.66"/>
 <element name="BAT1" library="SparkFun" package="BATTCON_20MM" value="cr2032" x="157.3" y="12.85"/>
 <element name="U$3" library="SparkFun" package="AVR_MINI_PROG" value="AVR_MINI_PROGSMD" x="128.09" y="16.66" rot="R180"/>
+<element name="Q1" library="transistor-fet" package="SC75_INFINEON" value="BSA223SP" x="2.54" y="-5.08"/>
 </elements>
 <signals>
 <signal name="LEDCONTROL1">
@@ -761,22 +804,8 @@ design rules under a new name.</description>
 <wire x1="126.59" y1="14.741" x2="126.59" y2="16.66" width="0.254" layer="1"/>
 <wire x1="157.3" y1="12.85" x2="153.9347" y2="12.85" width="0.254" layer="1"/>
 <wire x1="126.3882" y1="12.215" x2="127.8234" y2="12.215" width="0.254" layer="1"/>
-</signal>
-<signal name="2.8V">
-<contactref element="BAT1" pad="1"/>
-<contactref element="U$1" pad="8"/>
-<contactref element="U$3" pad="1"/>
-<wire x1="144.8" y1="12.85" x2="141.4347" y2="12.85" width="0.254" layer="1"/>
-<wire x1="128.09" y1="16.66" x2="137.6247" y2="16.66" width="0.254" layer="1"/>
-<wire x1="137.6247" y1="16.66" x2="141.4347" y2="12.85" width="0.254" layer="1"/>
-<wire x1="128.09" y1="16.66" x2="128.09" y2="15.6757" width="0.254" layer="16"/>
-<wire x1="119.6572" y1="8.405" x2="121.0924" y2="8.405" width="0.254" layer="1"/>
-<wire x1="126.2787" y1="13.8667" x2="126.1131" y2="13.8667" width="0.254" layer="1"/>
-<wire x1="126.1131" y1="13.8667" x2="121.0924" y2="8.846" width="0.254" layer="1"/>
-<wire x1="121.0924" y1="8.846" x2="121.0924" y2="8.405" width="0.254" layer="1"/>
-<via x="126.2787" y="13.8667" extent="1-16" drill="0.6096" diameter="1.016"/>
-<wire x1="128.09" y1="15.6757" x2="128.0877" y2="15.6757" width="0.254" layer="16"/>
-<wire x1="128.0877" y1="15.6757" x2="126.2787" y2="13.8667" width="0.254" layer="16"/>
+<contactref element="Q1" pad="1"/>
+<wire x1="2.04" y1="-5.655" x2="126.3882" y2="12.215" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="RESET">
 <contactref element="U$1" pad="1"/>
@@ -787,6 +816,25 @@ design rules under a new name.</description>
 <wire x1="125.09" y1="9.5337" x2="124.4951" y2="8.9388" width="0.254" layer="16"/>
 <wire x1="126.3882" y1="8.405" x2="124.953" y2="8.405" width="0.254" layer="1"/>
 <via x="124.4951" y="8.9388" extent="1-16" drill="0.6096" diameter="1.016"/>
+</signal>
+<signal name="N$7">
+<contactref element="BAT1" pad="1"/>
+</signal>
+<signal name="2.8V">
+<contactref element="Q1" pad="3"/>
+<contactref element="U$1" pad="8"/>
+<contactref element="U$3" pad="1"/>
+<wire x1="128.09" y1="16.66" x2="137.6247" y2="16.66" width="0.254" layer="1"/>
+<wire x1="137.6247" y1="16.66" x2="141.4347" y2="12.85" width="0.254" layer="1"/>
+<wire x1="128.09" y1="16.66" x2="128.09" y2="15.6757" width="0.254" layer="16"/>
+<wire x1="119.6572" y1="8.405" x2="121.0924" y2="8.405" width="0.254" layer="1"/>
+<wire x1="126.2787" y1="13.8667" x2="126.1131" y2="13.8667" width="0.254" layer="1"/>
+<wire x1="126.1131" y1="13.8667" x2="121.0924" y2="8.846" width="0.254" layer="1"/>
+<wire x1="121.0924" y1="8.846" x2="121.0924" y2="8.405" width="0.254" layer="1"/>
+<via x="126.2787" y="13.8667" extent="1-16" drill="0.6096" diameter="1.016"/>
+<wire x1="128.09" y1="15.6757" x2="128.0877" y2="15.6757" width="0.254" layer="16"/>
+<wire x1="128.0877" y1="15.6757" x2="126.2787" y2="13.8667" width="0.254" layer="16"/>
+<wire x1="3.04" y1="-5.655" x2="119.6572" y2="8.405" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
