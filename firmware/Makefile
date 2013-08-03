@@ -81,6 +81,7 @@ size: ${TARGET}
 flash: ${TARGET}
 	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U flash:w:$(PROJECT).hex
 
+## TODO: use variables instead of constants for fuse values
 fuse:
 	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 
