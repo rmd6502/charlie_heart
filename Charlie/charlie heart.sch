@@ -7388,9 +7388,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <part name="SUPPLY1" library="SparkFun-Aesthetics" deviceset="2.8V" device=""/>
 <part name="SUPPLY2" library="SparkFun-Aesthetics" deviceset="2.8V" device=""/>
 <part name="S1" library="SparkFun" deviceset="TAC_SWITCH" device="SMD"/>
-<part name="R6" library="rcl" deviceset="R-US_" device="R0805" value="10k"/>
 <part name="R7" library="rcl" deviceset="R-US_" device="R0805" value="1k"/>
-<part name="SUPPLY3" library="SparkFun-Aesthetics" deviceset="2.8V" device=""/>
 <part name="GND2" library="SparkFun-Aesthetics" deviceset="GND" device=""/>
 </parts>
 <sheets>
@@ -7447,9 +7445,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <instance part="SUPPLY1" gate="G$1" x="271.78" y="66.04"/>
 <instance part="SUPPLY2" gate="G$1" x="248.92" y="48.26"/>
 <instance part="S1" gate="S" x="180.34" y="17.78" rot="R90"/>
-<instance part="R6" gate="G$1" x="175.26" y="27.94" rot="R180"/>
 <instance part="R7" gate="G$1" x="180.34" y="0" rot="R270"/>
-<instance part="SUPPLY3" gate="G$1" x="170.18" y="33.02"/>
 <instance part="GND2" gate="1" x="180.34" y="-7.62"/>
 </instances>
 <busses>
@@ -7751,9 +7747,7 @@ We've spent an enormous amount of time creating and checking these footprints an
 <segment>
 <pinref part="S1" gate="S" pin="3"/>
 <wire x1="180.34" y1="22.86" x2="180.34" y2="27.94" width="0.1524" layer="91"/>
-<pinref part="R6" gate="G$1" pin="1"/>
 <wire x1="180.34" y1="27.94" x2="180.34" y2="33.02" width="0.1524" layer="91"/>
-<junction x="180.34" y="27.94"/>
 <label x="182.88" y="30.48" size="1.778" layer="95" rot="R90"/>
 </segment>
 </net>
@@ -7825,11 +7819,6 @@ We've spent an enormous amount of time creating and checking these footprints an
 <wire x1="248.92" y1="45.72" x2="248.92" y2="48.26" width="0.1524" layer="91"/>
 <junction x="243.84" y="45.72"/>
 <pinref part="SUPPLY2" gate="G$1" pin="2.8V"/>
-</segment>
-<segment>
-<pinref part="R6" gate="G$1" pin="2"/>
-<wire x1="170.18" y1="27.94" x2="170.18" y2="33.02" width="0.1524" layer="91"/>
-<pinref part="SUPPLY3" gate="G$1" pin="2.8V"/>
 </segment>
 </net>
 <net name="RESET" class="0">
