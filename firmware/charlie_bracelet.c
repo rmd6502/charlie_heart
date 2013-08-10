@@ -40,7 +40,7 @@ int main() {
             }
         
         //buffer[0] = state;
-        while (count < 2) {
+        while (count < 8) {
 			uint16_t shadow_cycle_count = cycle_count;
 			last_cycle_count = shadow_cycle_count;
 			

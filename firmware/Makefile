@@ -4,7 +4,7 @@
 
 ## General Flags
 #PROJECT = charlie_test2
-PROJECT = charlie_bracelet
+PROJECT = charlie_heart2
 MCU = attiny85
 TARGET = $(PROJECT).elf
 CC = avr-gcc
@@ -14,7 +14,7 @@ COMMON = -mmcu=$(MCU)
 
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
-CFLAGS += -Wall -gdwarf-2 -DF_CPU=8000000UL -Os -fsigned-char -fpack-struct -fshort-enums
+CFLAGS += -Wall -gdwarf-2 -DF_CPU=16000000UL -Os -fsigned-char -fpack-struct -fshort-enums
 CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d --std=c99
 
 ## Assembly specific flags
@@ -29,12 +29,19 @@ LDFLAGS +=  -Wl,-Map=$(PROJECT).map
 ## Programmer settings
 AVRDUDE = avrdude
 PROGRAMMER = dragon_isp
+PORT=usb
 ifeq ($(PART),)
 	ifeq ($(MCU),attiny85)
 		PART=t85
+        LFUSE=0xe1
+        HFUSE=0xde
+        EFUSE=0xff
 	else ifeq ($(MCU),attiny45)
 		PART=t45
-	     endif
+        LFUSE=0xe2
+        HFUSE=0xdf
+        EFUSE=0xff
+	endif
 endif
 
 ## Intel Hex file production flags
@@ -78,13 +85,13 @@ size: ${TARGET}
 	@echo
 	@avr-size ${TARGET}
 
-flash: ${TARGET}
+flash: $(PROJECT).hex
 	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U flash:w:$(PROJECT).hex
 
-## TODO: use variables instead of constants for fuse values
 fuse:
-	$(AVRDUDE) -P usb -p $(PART) -c $(PROGRAMMER) -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+	$(AVRDUDE) -P $(PORT) -p $(PART) -c $(PROGRAMMER) -U lfuse:w:$(LFUSE):m -U hfuse:w:$(HFUSE):m -U efuse:w:$(EFUSE):m
 
+.PHONY: program
 program: fuse flash
 	@echo All done!
 
