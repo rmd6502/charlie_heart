@@ -19,7 +19,7 @@ volatile uint8_t button_state = 0;
 
 static volatile LedPins *ledPins;
 
-#define BUTTON_PIN 3
+#define BUTTON_PIN 2
 
 void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer) {
     // setup the buffer

@@ -34,7 +34,7 @@ ifeq ($(PART),)
 	ifeq ($(MCU),attiny85)
 		PART=t85
         LFUSE=0xe1
-        HFUSE=0xde
+        HFUSE=0xdf
         EFUSE=0xff
 	else ifeq ($(MCU),attiny45)
 		PART=t45

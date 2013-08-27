@@ -5,7 +5,7 @@
 #include "charlie.h"
 
 #define NUM_PINS 20
-#define COUNTS_PER_STATE 12
+#define COUNTS_PER_STATE 8
 
 volatile uint8_t buffer[NUM_PINS] = {0};
 
