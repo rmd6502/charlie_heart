@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <string.h>
 
 #include "charlie.h"
 
@@ -36,7 +37,7 @@ int main() {
     initialize();
     while(1) {
         switch(runState) {
-            case SCANNER;
+            case SCANNER:
                 buffer[mod(state - 4,20)] = 0;
                 if (state > 3) buffer[mod(state - 3,20)] = 1;
                 if (state > 2) buffer[mod(state - 2,20)] = 4;
@@ -51,10 +52,11 @@ int main() {
                 }
                 break;
             case PULSE:
-            case POWEROFF:
-                memset(buffer, 0, sizeof(buffer));
                 break;
-            }
+            case POWEROFF:
+            default:
+                memset((void *)buffer, 0, sizeof(buffer));
+                break;
         }
 
         count = 0;
