@@ -6,7 +6,7 @@
 
 #define NUM_PINS 20
 #define COUNTS_PER_STATE 8
-#define BUTTON_PIN 3
+#define BUTTON_PIN 2
 
 volatile uint8_t buffer[NUM_PINS] = {0};
 
