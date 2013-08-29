@@ -5,8 +5,14 @@
 #include "charlie.h"
 
 #define NUM_PINS 20
-#define COUNTS_PER_STATE 8
+#define PULSE_COUNTS_PER_STATE 1
+#define SCANNER_COUNTS_PER_STATE 8
 #define BUTTON_PIN 2
+int16_t countsPerState[] = { 0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE };
+
+typedef enum _States {
+    POWEROFF = 0, SCANNER, PULSE, NUM_STATES
+} States;
 
 volatile uint8_t buffer[NUM_PINS] = {0};
 
@@ -24,34 +30,35 @@ int main() {
     int8_t state = 0;
     int8_t dir = 1;
     int16_t count = 0;
+    int16_t counts_per_state = SCANNER_COUNTS_PER_STATE;
     uint8_t last_button=0;
-    uint8_t running = 1;
+    States runState = SCANNER;
     initialize();
     while(1) {
-        if (running) {
-            buffer[mod(state - 4,20)] = 0;
-            if (state > 3) buffer[mod(state - 3,20)] = 1;
-            if (state > 2) buffer[mod(state - 2,20)] = 4;
-            if (state > 1) buffer[mod(state - 1,20)] = 15;
-            if (state < 20) buffer[mod(state,20)] = 4;
-            if (state < 19) buffer[state+1] = 1;
-            if (state < 18) buffer[state+2] = 0;
+        switch(runState) {
+            case SCANNER;
+                buffer[mod(state - 4,20)] = 0;
+                if (state > 3) buffer[mod(state - 3,20)] = 1;
+                if (state > 2) buffer[mod(state - 2,20)] = 4;
+                if (state > 1) buffer[mod(state - 1,20)] = 15;
+                if (state < 20) buffer[mod(state,20)] = 4;
+                if (state < 19) buffer[state+1] = 1;
+                if (state < 18) buffer[state+2] = 0;
 
-            state += dir;
-            if (state == -1 || state == 20) {
-                dir = -dir;
+                state += dir;
+                if (state == -1 || state == 20) {
+                    dir = -dir;
+                }
+                break;
+            case PULSE:
+            case POWEROFF:
+                memset(buffer, 0, sizeof(buffer));
+                break;
             }
         }
 
-        if (button_state != last_button) {
-            last_button = button_state;
-            if (!last_button) {
-                running = !running;
-            }
-        }
-        
         count = 0;
-        while (count < COUNTS_PER_STATE) {
+        while (count < counts_per_state) {
 			uint16_t shadow_cycle_count = cycle_count;
 			last_cycle_count = shadow_cycle_count;
 			
@@ -64,6 +71,22 @@ int main() {
 				
                 cli();
 				shadow_cycle_count = cycle_count;
+
+                if (button_state != last_button) {
+                    last_button = button_state;
+                    if (!last_button) {
+                        runState++;
+                        if (runState == NUM_STATES) {
+                            runState = POWEROFF;
+                        }
+                        counts_per_state = countsPerState[runState];
+                        if (runState == POWEROFF) {
+                            set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+                        } else {
+                            set_sleep_mode(SLEEP_MODE_IDLE);
+                        }
+                    }
+                }
             }
             sei();
             ++count;
@@ -85,4 +108,5 @@ void initialize(void) {
         }
     }
     charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
+    set_sleep_mode(SLEEP_MODE_IDLE);
 }
