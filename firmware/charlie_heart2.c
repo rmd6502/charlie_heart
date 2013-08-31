@@ -27,7 +27,6 @@ int8_t mod(int8_t q, int8_t d) {
 
 int main() {
     uint16_t last_cycle_count = 0;
-    // state goes from 0 to 21
     int8_t state = 0;
     int8_t dir = 1;
     int16_t count = 0;
@@ -38,10 +37,11 @@ int main() {
     while(1) {
         switch(runState) {
             case SCANNER:
+                // state goes from 0 to 19
                 buffer[mod(state - 4,20)] = 0;
-                if (state > 3) buffer[mod(state - 3,20)] = 1;
-                if (state > 2) buffer[mod(state - 2,20)] = 4;
-                if (state > 1) buffer[mod(state - 1,20)] = 15;
+                buffer[mod(state - 3,20)] = 1;
+                buffer[mod(state - 2,20)] = 4;
+                buffer[mod(state - 1,20)] = 15;
                 if (state < 20) buffer[mod(state,20)] = 4;
                 if (state < 19) buffer[state+1] = 1;
                 if (state < 18) buffer[state+2] = 0;
@@ -52,6 +52,19 @@ int main() {
                 }
                 break;
             case PULSE:
+                // state goes from 0 to 29
+                // 0-4 up, 5-9 down, 10-14 up, 15-19 down, 20-29 idle
+                if (state < 5 || (state > 9 && state < 15)) {
+                    memset((void *)buffer, (1 + (state % 5)) * 3, sizeof(buffer));
+                } else if (state < 10 || (state > 14 && state < 20)) {
+                    memset((void *)buffer, (5 - (state % 5)) * 3, sizeof(buffer));
+                } else {
+                    memset((void *)buffer, 0, sizeof(buffer));
+                }
+                ++state;
+                if (state == 30) {
+                    state = 0;
+                }
                 break;
             case POWEROFF:
             default:
@@ -77,6 +90,8 @@ int main() {
                 if (button_state != last_button) {
                     last_button = button_state;
                     if (!last_button) {
+                        state = 0;
+                        dir = 1;
                         runState++;
                         if (runState == NUM_STATES) {
                             runState = POWEROFF;
