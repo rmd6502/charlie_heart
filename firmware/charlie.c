@@ -49,6 +49,11 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     TCCR0A = (2 << WGM00);
     TCCR0B = (2 << CS00);
 
+    // Set up the button
+    GIMSK = _BV(PCIE);
+    PCMSK = _BV(PCINT2);
+    GIFR = _BV(PCIF);
+
     sei();
 }
 
@@ -81,4 +86,12 @@ ISR(TIMER0_COMPA_vect) {
             PORTB = 1 << button_pin;
         }
     }
+}
+
+ISR(PCINT0_vect)
+{
+    if (timer != 16) {
+        return;
+    }
+    button_state = (PINB >> button_pin) & 1;
 }
