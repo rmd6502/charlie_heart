@@ -16,6 +16,7 @@ typedef enum _States {
 } States;
 
 volatile uint8_t buffer[NUM_PINS] = {0};
+volatile uint8_t button_state = 0;
 
 void initialize(void);
 
@@ -126,6 +127,15 @@ void initialize(void) {
             ++count;
         }
     }
-    charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
+    charlie_init(1,NUM_PINS,ledPins,buffer);
     set_sleep_mode(SLEEP_MODE_IDLE);
+    cli();
+    PCMSK = _BV(PCINT2);
+    GIFR = _BV(PCIF);
+    sei();
+}
+
+ISR(PCINT0_vect)
+{
+    // only check button state if the pin is an input and the pullup is on
 }
