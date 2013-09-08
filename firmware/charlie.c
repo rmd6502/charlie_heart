@@ -15,15 +15,18 @@ static volatile uint8_t num_rows, num_columns;
 static volatile uint8_t *bufPtr = 0;
 static volatile LedPins *ledPtr = 0;
 volatile uint16_t cycle_count;
+volatile uint8_t button_state = 0;
+static volatile uint8_t button_pin = 0;
 
 static volatile LedPins *ledPins;
 
-void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer) {
+void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer,uint8_t _button_pin) {
     // setup the buffer
     num_rows = _num_rows;
     num_columns = _num_columns;
     ledPins = led_pins;
     buffer = _buffer;
+    button_pin = _button_pin;
 
     bufPtr = (uint8_t *)buffer + num_rows * num_columns;
     ledPtr = ledPins + num_rows * num_columns;
@@ -70,6 +73,11 @@ ISR(TIMER0_COMPA_vect) {
     --bufPtr;
     --ledPtr;
 
+    if (timer == 16) {
+        button_state = (PINB >> button_pin) & 1;
+        --timer;
+        return;
+    }
     if (*bufPtr >= timer) {
         DDRB = _BV(ledPtr->highpin) | _BV(ledPtr->lowpin);
         PORTB = _BV(ledPtr->highpin);
@@ -83,9 +91,10 @@ ISR(TIMER0_COMPA_vect) {
         ledPtr = ledPins + num_rows * num_columns;
         --timer;
         if (timer == 0) {
-	        timer = 15;
+	        timer = 16;
 	        ++cycle_count;
             DDRB = 0;
+            PORTB = 1 << button_pin;
         }
     }
 }
