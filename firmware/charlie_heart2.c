@@ -125,7 +125,7 @@ void initialize(void) {
             ++count;
         }
     }
-    charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
+    charlie_init(1,NUM_PINS,ledPins,buffer);
     set_sleep_mode(SLEEP_MODE_IDLE);
     cli();
     PCMSK = _BV(PCINT2);
