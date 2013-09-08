@@ -57,6 +57,17 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     sei();
 }
 
+void prepare_for_sleep()
+{
+    timer = 16;
+    TCCR0B = 0;
+}
+
+void return_from_sleep()
+{
+    TCCR0B = (2 << CS00);
+}
+
 ISR(TIMER0_COMPA_vect) {
 
     --bufPtr;

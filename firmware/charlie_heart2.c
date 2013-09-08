@@ -98,8 +98,10 @@ int main() {
                         }
                         counts_per_state = countsPerState[runState];
                         if (runState == POWEROFF) {
+                            prepare_for_sleep();
                             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
                         } else {
+                            return_from_sleep();
                             set_sleep_mode(SLEEP_MODE_IDLE);
                         }
                     }
