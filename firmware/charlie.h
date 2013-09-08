@@ -8,7 +8,6 @@ typedef struct _LedPins {
     uint8_t lowpin;
 } LedPins;
 
-void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer,uint8_t _button_pin);
+void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, volatile uint8_t *_buffer);
 
 extern volatile uint16_t cycle_count;
-extern volatile uint8_t button_state;

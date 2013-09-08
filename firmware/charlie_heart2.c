@@ -6,7 +6,7 @@
 #include "charlie.h"
 
 #define NUM_PINS 20
-#define PULSE_COUNTS_PER_STATE 1
+#define PULSE_COUNTS_PER_STATE 12
 #define SCANNER_COUNTS_PER_STATE 8
 #define BUTTON_PIN 2
 int16_t countsPerState[] = { 0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE };
@@ -16,6 +16,7 @@ typedef enum _States {
 } States;
 
 volatile uint8_t buffer[NUM_PINS] = {0};
+volatile uint8_t button_state = 0;
 
 void initialize(void);
 
@@ -126,4 +127,13 @@ void initialize(void) {
     }
     charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
     set_sleep_mode(SLEEP_MODE_IDLE);
+    cli();
+    PCMSK = _BV(PCINT2);
+    GIFR = _BV(PCIF);
+    sei();
+}
+
+ISR(PCINT0_vect)
+{
+    // only check button state if the pin is an input and the pullup is on
 }
