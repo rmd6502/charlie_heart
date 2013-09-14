@@ -14,3 +14,4 @@ void return_from_sleep();
 
 extern volatile uint16_t cycle_count;
 extern volatile uint8_t button_state;
+extern volatile uint16_t val;

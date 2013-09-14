@@ -17,6 +17,7 @@ static volatile LedPins *ledPtr = 0;
 volatile uint16_t cycle_count;
 volatile uint8_t button_state = 0;
 static volatile uint8_t button_pin = 0;
+volatile uint16_t val = 0;
 
 static volatile LedPins *ledPins;
 
@@ -94,7 +95,11 @@ ISR(TIMER0_COMPA_vect) {
 	        timer = 16;
 	        ++cycle_count;
             DDRB = 0;
-            PORTB = 1 << button_pin;
+            PORTB = 0;
+            ADCSRA |= _BV(ADSC);
+            while (ADCSRA & _BV(ADSC)) ;
+            val = (ADCH << 8) | ADCL;
+            //PORTB = 1 << button_pin;
         }
     }
 }
