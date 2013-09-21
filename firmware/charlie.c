@@ -17,6 +17,7 @@ static volatile LedPins *ledPtr = 0;
 volatile uint16_t cycle_count;
 volatile uint8_t button_state = 0;
 static volatile uint8_t button_pin = 0;
+static volatile uint8_t sleep_state = 0;
 volatile uint16_t val = 0;
 
 static volatile LedPins *ledPins;
@@ -51,21 +52,26 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     TCCR0B = (2 << CS00);
 
     // Set up the button
-    //GIMSK = _BV(PCIE);
-    //PCMSK = _BV(PCINT2);
-    //GIFR = _BV(PCIF);
+    GIMSK = _BV(PCIE);
+    PCMSK = _BV(PCINT2);
+    GIFR = _BV(PCIF);
 
     sei();
 }
 
 void prepare_for_sleep()
 {
+    sleep_state = 1;
     timer = 16;
     TCCR0B = 0;
+    DDRB = 0;
+    //PORTB = 0;
+    PORTB = 1 << button_pin;
 }
 
 void return_from_sleep()
 {
+    sleep_state = 0;
     TCCR0B = (2 << CS00);
 }
 
@@ -106,7 +112,7 @@ ISR(TIMER0_COMPA_vect) {
 
 ISR(PCINT0_vect)
 {
-    if (timer != 16) {
+    if (!sleep_state) {
         return;
     }
     button_state = (PINB >> button_pin) & 1;

@@ -1,7 +1,8 @@
-#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 #include <avr/sleep.h>
 #include <string.h>
+#include <util/delay.h>
 
 #include "charlie.h"
 
@@ -73,7 +74,7 @@ int main() {
         }
 
         count = 0;
-        while (count < counts_per_state) {
+        while (count < counts_per_state || counts_per_state == 0) {
 			uint16_t shadow_cycle_count = cycle_count;
 			last_cycle_count = shadow_cycle_count;
 			
@@ -99,12 +100,15 @@ int main() {
                         counts_per_state = countsPerState[runState];
                         if (runState == POWEROFF) {
                             prepare_for_sleep();
+
                             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+                            last_button = button_state;
                         } else {
                             return_from_sleep();
                             set_sleep_mode(SLEEP_MODE_IDLE);
                         }
                     }
+                    _delay_ms(1);
                 }
             }
             sei();
