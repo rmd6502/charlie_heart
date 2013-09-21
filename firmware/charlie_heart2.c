@@ -100,7 +100,7 @@ int main() {
                         counts_per_state = countsPerState[runState];
                         if (runState == POWEROFF) {
                             prepare_for_sleep();
-
+                            memset((void *)buffer, 0, sizeof(buffer));
                             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
                             last_button = button_state;
                         } else {
