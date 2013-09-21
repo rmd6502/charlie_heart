@@ -41,19 +41,19 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     // initialize the timer and interrupt
     TCNT0 = 0;
     OCR0A = 40;
-    // interrupt at count 63, so 32khz interrupt
+    // interrupt at count 40, so 50kHz interrupt
     TIMSK |= _BV(OCIE0A);
     TIFR = _BV(OCF0A);
     // Start the timer at PCK/8, so 2 MHz timer clock
-    // with 16 shades, that means 7812.5 frames/sec
-    // and the interrupt routine has 256 cycles to run, including interrupt and gcc overhead
+    // with 16 shades, that means 3125 frames/sec
+    // and the interrupt routine has 320 cycles to run, including interrupt and gcc overhead
     TCCR0A = (2 << WGM00);
     TCCR0B = (2 << CS00);
 
     // Set up the button
-    GIMSK = _BV(PCIE);
-    PCMSK = _BV(PCINT2);
-    GIFR = _BV(PCIF);
+    //GIMSK = _BV(PCIE);
+    //PCMSK = _BV(PCINT2);
+    //GIFR = _BV(PCIF);
 
     sei();
 }
@@ -75,6 +75,9 @@ ISR(TIMER0_COMPA_vect) {
     --ledPtr;
 
     if (timer == 16) {
+        //ADCSRA |= _BV(ADSC);
+        //while (ADCSRA & _BV(ADSC)) ;
+        //val = ADC;
         button_state = (PINB >> button_pin) & 1;
         --timer;
         return;
@@ -95,11 +98,8 @@ ISR(TIMER0_COMPA_vect) {
 	        timer = 16;
 	        ++cycle_count;
             DDRB = 0;
-            PORTB = 0;
-            ADCSRA |= _BV(ADSC);
-            while (ADCSRA & _BV(ADSC)) ;
-            val = (ADCH << 8) | ADCL;
-            //PORTB = 1 << button_pin;
+            //PORTB = 0;
+            PORTB = 1 << button_pin;
         }
     }
 }

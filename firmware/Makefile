@@ -3,8 +3,8 @@
 ###############################################################################
 
 ## General Flags
-#PROJECT = charlie_test2
-PROJECT = charlie_heart3
+PROJECT = charlie_heart2
+#PROJECT = charlie_heart3
 MCU = attiny85
 TARGET = $(PROJECT).elf
 CC = avr-gcc
@@ -27,7 +27,7 @@ LDFLAGS = $(COMMON)
 LDFLAGS +=  -Wl,-Map=$(PROJECT).map
 
 ## Programmer settings
-AVRDUDE = avrdude
+AVRDUDE = avrdude -B4
 PROGRAMMER = dragon_isp
 PORT=usb
 ifeq ($(PART),)

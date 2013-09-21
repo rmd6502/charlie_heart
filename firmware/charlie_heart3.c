@@ -14,7 +14,7 @@ void initialize(void);
 
 uint16_t map(uint32_t val, uint16_t minval, uint16_t maxval, uint16_t minout, uint16_t maxout)
 {
-    if (maxval != minval) {
+    if (maxval != minval && val >= minval) {
         return ((val - minval) * (maxout - minout + 1) / (maxval - minval)) + minout;
     } else {
         return 0;
