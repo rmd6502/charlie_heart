@@ -7,7 +7,7 @@
 #include "charlie.h"
 
 #define NUM_PINS 20
-#define PULSE_COUNTS_PER_STATE 12
+#define PULSE_COUNTS_PER_STATE 8
 #define SCANNER_COUNTS_PER_STATE 8
 #define BUTTON_PIN 2
 int16_t countsPerState[] = { 0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE };
