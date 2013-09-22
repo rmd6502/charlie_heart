@@ -3,8 +3,8 @@
 ###############################################################################
 
 ## General Flags
-PROJECT = charlie_heart2
-#PROJECT = charlie_heart3
+#PROJECT = charlie_heart2
+PROJECT = charlie_heart3
 MCU = attiny85
 TARGET = $(PROJECT).elf
 CC = avr-gcc
@@ -16,6 +16,7 @@ COMMON = -mmcu=$(MCU)
 CFLAGS = $(COMMON)
 CFLAGS += -Wall -gdwarf-2 -DF_CPU=16000000UL -Os -fsigned-char -fpack-struct -fshort-enums
 CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d --std=c99
+CFLAGS += -DADC_MODE
 
 ## Assembly specific flags
 ASMFLAGS = $(COMMON)

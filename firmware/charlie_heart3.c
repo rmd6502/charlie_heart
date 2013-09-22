@@ -59,6 +59,4 @@ void initialize(void) {
     charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
     set_sleep_mode(SLEEP_MODE_IDLE);
     // set up the ADC
-    ADMUX = _BV(MUX0);
-    ADCSRA = _BV(ADEN);
 }
