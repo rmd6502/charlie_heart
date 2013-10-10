@@ -90,12 +90,12 @@ ISR(TIMER0_COMPA_vect) {
     --bufPtr;
     --ledPtr;
 
-#if ADC_MODE
-    ADCSRA |= _BV(ADSC);
-    while (ADCSRA & _BV(ADSC)) ;
-    val = ADC;
-#endif
     if (timer == 16) {
+#if ADC_MODE
+        ADCSRA |= _BV(ADSC);
+        while (ADCSRA & _BV(ADSC)) ;
+        val = ADC;
+#endif
         button_state = (PINB >> button_pin) & 1;
         --timer;
         return;

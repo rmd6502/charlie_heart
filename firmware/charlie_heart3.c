@@ -15,7 +15,7 @@ void initialize(void);
 uint16_t map(uint32_t val, uint16_t minval, uint16_t maxval, uint16_t minout, uint16_t maxout)
 {
     if (maxval != minval && val >= minval) {
-        return ((val - minval) * (maxout - minout + 1) / (maxval - minval)) + minout;
+        return ((val - minval) * (maxout - minout) / (maxval - minval)) + minout;
     } else {
         return 0;
     }
@@ -28,18 +28,13 @@ int main() {
     initialize();
     for (int i=0; i < NUM_PINS; ++i) buffer[i] = 8;
     while(1) {
-        if (cycle_count != last_cycle_count) {
-            if (!measured) {
-                if (val > max) max = val;
-                if (val < min) min = val;
-                uint16_t newval = map(val, min, max, 0, 15);
-                for (int i=0; i < NUM_PINS; ++i) buffer[i] = newval;
-                measured = 1;
-                last_cycle_count = cycle_count;
-            }
-        } else {
-            measured = 0;
-        }
+        //if (cycle_count != last_cycle_count) {
+            if (val > max) max = val;
+            if (val < min) min = val;
+            uint16_t newval = map(val, min, max, 0, 15);
+            for (int i=0; i < NUM_PINS; ++i) buffer[i] = newval;
+            last_cycle_count = cycle_count;
+        //}
     }
 }
 
