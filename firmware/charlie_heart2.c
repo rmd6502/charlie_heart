@@ -38,17 +38,17 @@ int main() {
     while(1) {
         switch(runState) {
             case SCANNER:
-                // state goes from 0 to 19
-                buffer[mod(state - 4,20)] = 0;
-                buffer[mod(state - 3,20)] = 1;
-                buffer[mod(state - 2,20)] = 4;
-                buffer[mod(state - 1,20)] = 15;
-                if (state < 20) buffer[mod(state,20)] = 4;
+		// state goes from 0 to 19
+		if (state > 2) buffer[mod(state - 4,20)] = 0;
+               	if (state > 1) buffer[mod(state - 3,20)] = 1;
+               	if (state > 0) buffer[mod(state - 2,20)] = 4;
+		buffer[mod(state - 1,20)] = 15;
+		if (state < 20) buffer[mod(state,20)] = 4;
                 if (state < 19) buffer[state+1] = 1;
                 if (state < 18) buffer[state+2] = 0;
-
+	
                 state += dir;
-                if (state == -1 || state == 20) {
+		if (state == 0 || state == 20) {
                     dir = -dir;
                 }
                 break;
