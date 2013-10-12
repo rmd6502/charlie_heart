@@ -9,11 +9,12 @@
 #define NUM_PINS 20
 #define PULSE_COUNTS_PER_STATE 8
 #define SCANNER_COUNTS_PER_STATE 8
+#define ALT_COUNTS_PER_STATE 25
 #define BUTTON_PIN 2
-int16_t countsPerState[] = { 0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE };
+int16_t countsPerState[] = { 0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE, ALT_COUNTS_PER_STATE };
 
 typedef enum _States {
-    POWEROFF = 0, SCANNER, PULSE, NUM_STATES
+    POWEROFF = 0, SCANNER, PULSE, ALTERNATE, NUM_STATES
 } States;
 
 volatile uint8_t buffer[NUM_PINS] = {0};
@@ -67,6 +68,14 @@ int main() {
                     state = 0;
                 }
                 break;
+            case ALTERNATE: {
+                for (int ledNum = 0; ledNum < NUM_PINS-1; ledNum += 2) {
+                    buffer[ledNum] = state;
+                    buffer[ledNum+1] = 15 - state;
+                }
+                state = 15 - state;
+            }
+            break;
             case POWEROFF:
             default:
                 memset((void *)buffer, 0, sizeof(buffer));
