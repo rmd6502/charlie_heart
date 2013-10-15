@@ -1,6 +1,7 @@
 // Copyright (c) 2012 Robert M. Diamond All Rights Reserved.
 //
 
+#include <stdint.h>
 static const unsigned int SHADES = 16;
 
 typedef struct _LedPins {
