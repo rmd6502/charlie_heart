@@ -25,6 +25,7 @@ volatile uint8_t buffer[NUM_PINS] = {
 };
 
 void initialize(void);
+uint16_t pulseCounts();
 
 int8_t mod(int8_t q, int8_t d)
 {
@@ -41,9 +42,9 @@ int main()
 	int8_t state = 0;
 	int8_t dir = 1;
 	int16_t count = 0;
-	int16_t counts_per_state = SCANNER_COUNTS_PER_STATE;
+	int16_t counts_per_state = pulseCounts();
 	uint8_t last_button=0;
-	States runState = SCANNER;
+	States runState = PULSE;
 	initialize();
 	while(1) {
 		switch(runState) {
@@ -127,7 +128,12 @@ int main()
 						if (runState == NUM_STATES) {
 							runState = POWEROFF;
 						}
-						counts_per_state = countsPerState[runState];
+						if (runState == PULSE) {
+							counts_per_state = pulseCounts();
+						} else {
+							counts_per_state = countsPerState[runState];	
+						}
+						
 						if (runState == POWEROFF) {
 							prepare_for_sleep();
 							memset((void *)buffer, 0, sizeof(buffer));
@@ -163,4 +169,25 @@ void initialize(void)
 	}
 	charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
 	set_sleep_mode(SLEEP_MODE_IDLE);
+    ADCSRA = 0;
+	ADMUX = _BV(REFS1) | 0xf;
+	ADCSRA = _BV(ADEN) | _BV(ADSC) | (7 << ADPS0);
+}
+
+uint16_t map(int16_t reading, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max)
+{
+	return (reading - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+uint16_t pulseCounts()
+{
+	static uint16_t temperature = 0;
+	static uint16_t pulseCounts = PULSE_COUNTS_PER_STATE;
+	
+	if (!(ADCSRA & _BV(ADSC))) {
+		temperature = ADCL + (ADCH << 8);
+        if (temperature < 300) temperature = 300;
+		ADCSRA |= _BV(ADSC);
+		pulseCounts = map(temperature, 300, 313,20,3);
+	}
+	return pulseCounts;
 }

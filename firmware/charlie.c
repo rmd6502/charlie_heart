@@ -1,11 +1,12 @@
 // Copyright (c) 2012 Robert M. Diamond All Rights Reserved.
 //
-#include "charlie.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "charlie.h"
 
 // buffer bytes, only lower 4 bits are significant
 static volatile uint8_t *buffer;
