@@ -185,13 +185,15 @@ uint16_t pulseCounts()
 {
 	static uint16_t temperature = 0;
 	static uint16_t pulseCounts = PULSE_COUNTS_PER_STATE;
+    static int min_temp = 290;
+    static int max_temp = 305;
 	
 	if (!(ADCSRA & _BV(ADSC))) {
 		temperature = ADCL + (ADCH << 8);
-        if (temperature < 290) temperature = 290;
+        if (temperature < min_temp) temperature = min_temp;
 	    ADMUX = _BV(REFS1) | 0xf;
 		ADCSRA |= _BV(ADSC);
-		pulseCounts = map(temperature, 290, 310,20,3);
+		pulseCounts = map(temperature, min_temp, max_temp,20,3);
 	}
 	return pulseCounts;
 }
