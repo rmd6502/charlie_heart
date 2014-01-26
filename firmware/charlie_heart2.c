@@ -181,6 +181,18 @@ uint16_t map(int16_t reading, int16_t in_min, int16_t in_max, int16_t out_min, i
 {
 	return (reading - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+uint16_t constrain(int16_t reading, int16_t in_min, int16_t in_max)
+{
+    if (reading < in_min) {
+        reading = in_min;
+    }
+    if (reading > in_max) {
+        reading = in_max;
+    }
+    return reading;
+}
+
 uint16_t pulseCounts()
 {
 	static uint16_t temperature = 0;
@@ -189,8 +201,7 @@ uint16_t pulseCounts()
     static int max_temp = 305;
 	
 	if (!(ADCSRA & _BV(ADSC))) {
-		temperature = ADCL + (ADCH << 8);
-        if (temperature < min_temp) temperature = min_temp;
+		temperature = constrain(ADCL + (ADCH << 8),min_temp,max_temp);
 	    ADMUX = _BV(REFS1) | 0xf;
 		ADCSRA |= _BV(ADSC);
 		pulseCounts = map(temperature, min_temp, max_temp,20,3);
