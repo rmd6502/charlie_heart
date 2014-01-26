@@ -198,7 +198,7 @@ uint16_t pulseCounts()
 	static uint16_t temperature = 0;
 	static uint16_t pulseCounts = PULSE_COUNTS_PER_STATE;
     static int min_temp = 290;
-    static int max_temp = 305;
+    static int max_temp = 300;
 	
 	if (!(ADCSRA & _BV(ADSC))) {
 		temperature = constrain(ADCL + (ADCH << 8),min_temp,max_temp);
