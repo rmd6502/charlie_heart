@@ -37,11 +37,7 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	timer = 15;
 	cycle_count = 0;
 
-#if ADC_MODE
 	PRR = ~(_BV(PRTIM0) | _BV(PRADC));
-#else
-	PRR = ~(_BV(PRTIM0));
-#endif
 	MCUCR &= ~(1 << PUD);
 
 	cli();
@@ -57,16 +53,10 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	TCCR0A = (2 << WGM00);
 	TCCR0B = (2 << CS00);
 
-#if !ADC_MODE
 	// Set up the button
 	GIMSK = _BV(PCIE);
 	PCMSK = _BV(PCINT2);
 	GIFR = _BV(PCIF);
-#else
-	ADMUX = _BV(MUX0);
-	ADCSRA = _BV(ADEN);
-	DIDR0 = _BV(ADC1D);
-#endif
 
 	sei();
 }
@@ -93,11 +83,6 @@ ISR(TIMER0_COMPA_vect) {
 	--ledPtr;
 
 	if (timer == 16) {
-#if ADC_MODE
-		ADCSRA |= _BV(ADSC);
-		while (ADCSRA & _BV(ADSC)) ;
-		val = ADC;
-#endif
 		button_state = (PINB >> button_pin) & 1;
 		--timer;
 		return;
@@ -118,11 +103,7 @@ ISR(TIMER0_COMPA_vect) {
 			timer = 16;
 			++cycle_count;
 			DDRB = 0;
-#if ADC_MODE
-			PORTB = 0;
-#else
 			PORTB = 1 << button_pin;
-#endif
 		}
 	}
 }

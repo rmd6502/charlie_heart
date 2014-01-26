@@ -105,6 +105,9 @@ int main()
 		}
 
 		count = 0;
+	    if (runState == PULSE) {
+			counts_per_state = pulseCounts();
+		}
 		while (count < counts_per_state || counts_per_state == 0) {
 			uint16_t shadow_cycle_count = cycle_count;
 			last_cycle_count = shadow_cycle_count;
@@ -185,9 +188,10 @@ uint16_t pulseCounts()
 	
 	if (!(ADCSRA & _BV(ADSC))) {
 		temperature = ADCL + (ADCH << 8);
-        if (temperature < 300) temperature = 300;
+        if (temperature < 290) temperature = 290;
+	    ADMUX = _BV(REFS1) | 0xf;
 		ADCSRA |= _BV(ADSC);
-		pulseCounts = map(temperature, 300, 313,20,3);
+		pulseCounts = map(temperature, 290, 310,20,3);
 	}
 	return pulseCounts;
 }
