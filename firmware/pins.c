@@ -1,10 +1,17 @@
 #include <avr/io.h>
 #include "pins.h"
 
-static uint8_t BITNUM[] = { 1<<0, 1<<1,1<<2,1<<3,1<<4,1<<5,1<<6,1<<7, 1<<0, 1<<1,1<<2,1<<3 };
-static uint16_t DDR_REG[] = { (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRB };
-static uint16_t PIN_REG[] = { (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINB };
-static uint16_t PORT_REG[] = { (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB };
+#if __AVR_ATtiny841__
+static uint8_t BITNUM[] = { 1<<0,1<<1,1<<4,1<<0,1<<1,1<<2,1<<3,1<<5,1<<6,1<<7,1<<2,1<<3};
+static uint16_t DDR_REG[] = { (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRA, (uint16_t)&DDRB, (uint16_t)&DDRB, };
+static uint16_t PIN_REG[] = { (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINA, (uint16_t)&PINB, (uint16_t)&PINB, };
+static uint16_t PORT_REG[] = { (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTA, (uint16_t)&PORTB, (uint16_t)&PORTB, };
+#else
+static uint8_t BITNUM[] = { 1<<0, 1<<1,1<<2,1<<3,1<<4, };
+static uint16_t DDR_REG[] = { (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRB, (uint16_t)&DDRB };
+static uint16_t PIN_REG[] = { (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINB, (uint16_t)&PINB };
+static uint16_t PORT_REG[] = { (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, };
+#endif
 
 
 void pinMode(uint8_t pin, enum Directions direction)

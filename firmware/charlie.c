@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "charlie.h"
+#include "pins.h"
 
 // buffer bytes, only lower 4 bits are significant
 static volatile uint8_t *buffer;
@@ -38,25 +39,36 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	cycle_count = 0;
 
 	PRR = ~(_BV(PRTIM0) | _BV(PRADC));
+    #if defined(PUD)
 	MCUCR &= ~(1 << PUD);
+    #endif
 
 	cli();
+	// interrupt at 50kHz 
+	OCR0A = F_CPU / 400000;
 	// initialize the timer and interrupt
 	TCNT0 = 0;
-	OCR0A = 40;
-	// interrupt at count 40, so 50kHz interrupt
-	TIMSK |= _BV(OCIE0A);
-	TIFR = _BV(OCF0A);
 	// Start the timer at PCK/8, so 2 MHz timer clock
 	// with 16 shades, that means 3125 frames/sec
 	// and the interrupt routine has 320 cycles to run, including interrupt and gcc overhead
 	TCCR0A = (2 << WGM00);
 	TCCR0B = (2 << CS00);
+#if __AVR_ATtiny841__
+	TIMSK0 |= _BV(OCIE0A);
+	TIFR0 = _BV(OCF0A);
+
+	// Set up the button
+	GIMSK = _BV(PCIE0);
+	PCMSK0 = _BV(PCINT3);
+#else
+	TIMSK |= _BV(OCIE0A);
+	TIFR = _BV(OCF0A);
 
 	// Set up the button
 	GIMSK = _BV(PCIE);
 	PCMSK = _BV(PCINT2);
 	GIFR = _BV(PCIF);
+#endif
 
 	sei();
 }
