@@ -66,6 +66,7 @@ void prepare_for_sleep()
 	sleep_state = 1;
 	timer = 16;
 	TCCR0B = 0;
+    DDRA = 0;
 	DDRB = 0;
 	//PORTB = 0;
 	PORTB = 1 << button_pin;

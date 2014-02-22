@@ -5,7 +5,7 @@
 ## General Flags
 PROJECT = charlie_heart2
 #PROJECT = charlie_heart3
-MCU = attiny85
+MCU = attiny841
 TARGET = $(PROJECT).elf
 CC = avr-gcc
 
@@ -57,7 +57,7 @@ HEX_EEPROM_FLAGS += --change-section-lma .eeprom=0 --no-change-warnings
 INCLUDES = 
 
 ## Objects that must be built in order to link
-OBJECTS = $(PROJECT).o charlie.o
+OBJECTS = $(PROJECT).o charlie.o pins.o
 
 ## Objects explicitly added by the user
 LINKONLYOBJECTS = 
