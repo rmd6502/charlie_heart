@@ -1,5 +1,5 @@
 enum Directions {
-    INPUT, OUTPUT
+    INPUT, OUTPUT, INPUT_PULLUP
 };
 void pinMode(uint8_t pin, enum Directions direction);
 void digitalWrite(uint8_t pin, uint8_t value);
