@@ -59,7 +59,7 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 
 	// Set up the button
 	GIMSK = _BV(PCIE0);
-	PCMSK0 = _BV(PCINT3);
+	PCMSK0 = _BV(3);
 #else
 	TIMSK |= _BV(OCIE0A);
 	TIFR = _BV(OCF0A);
@@ -78,10 +78,11 @@ void prepare_for_sleep()
 	sleep_state = 1;
 	timer = 16;
 	TCCR0B = 0;
+#if defined(DDRA)
     DDRA = 0;
+#endif
 	DDRB = 0;
-	//PORTB = 0;
-	PORTB = 1 << button_pin;
+    digitalWrite(button_pin, 1);
 }
 
 void return_from_sleep()
@@ -92,20 +93,24 @@ void return_from_sleep()
 
 ISR(TIMER0_COMPA_vect) {
 
+    pinMode(ledPtr->lowpin, INPUT);
+    pinMode(ledPtr->highpin, INPUT);
 	--bufPtr;
 	--ledPtr;
 
 	if (timer == 16) {
-		button_state = (PINB >> button_pin) & 1;
+		button_state = digitalRead(button_pin);
 		--timer;
 		return;
 	}
 	if (*bufPtr >= timer) {
-		DDRB = _BV(ledPtr->highpin) | _BV(ledPtr->lowpin);
-		PORTB = _BV(ledPtr->highpin);
+        pinMode(ledPtr->lowpin, OUTPUT);
+        pinMode(ledPtr->highpin, OUTPUT);
+        digitalWrite(ledPtr->highpin, 1);
+        digitalWrite(ledPtr->lowpin, 0);
 	} else {
-		DDRB = 0;
-		PORTB = 0;
+        pinMode(ledPtr->lowpin, INPUT);
+        pinMode(ledPtr->highpin, INPUT);
 	}
 
 	if (bufPtr == buffer) {
@@ -115,8 +120,8 @@ ISR(TIMER0_COMPA_vect) {
 		if (timer == 0) {
 			timer = 16;
 			++cycle_count;
-			DDRB = 0;
-			PORTB = 1 << button_pin;
+            pinMode(button_pin, INPUT);
+            digitalWrite(button_pin, 1);
 		}
 	}
 }
@@ -126,5 +131,5 @@ ISR(PCINT0_vect)
 	if (!sleep_state) {
 		return;
 	}
-	button_state = (PINB >> button_pin) & 1;
+    button_state = digitalRead(button_pin);
 }
