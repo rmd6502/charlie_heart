@@ -19,12 +19,22 @@ static uint8_t pinModes[sizeof(BITNUM)] = {0};
 
 void pinMode(uint8_t pin, enum Directions direction)
 {
-    pinModes[pin] = direction;
+#if defined(PUEA)
+    if (direction != INPUT_PULLUP && pinModes[pin] == INPUT_PULLUP) {
+        PUE_REG[pin] &= ~BITNUM[pin];
+    }
+#endif
     if (direction == OUTPUT) {
         DDR_REG[pin] |= BITNUM[direction];
     } else {
         DDR_REG[pin] &= ~BITNUM[direction];
+#if defined(PUEA)
+        if (direction == INPUT_PULLUP) {
+            PUE_REG[pin] |= BITNUM[pin];
+        }
+#endif
     }
+    pinModes[pin] = direction;
 }
 
 void digitalWrite(uint8_t pin, uint8_t value)
