@@ -7,7 +7,7 @@
 #include "charlie.h"
 
 #define NUM_PINS 20
-#define PULSE_COUNTS_PER_STATE 8
+#define PULSE_COUNTS_PER_STATE 3
 #define SCANNER_COUNTS_PER_STATE 8
 #define ALT_COUNTS_PER_STATE 25
 #define BUTTON_PIN 2

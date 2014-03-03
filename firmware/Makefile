@@ -28,12 +28,17 @@ LDFLAGS = $(COMMON)
 LDFLAGS +=  -Wl,-Map=$(PROJECT).map
 
 ## Programmer settings
-AVRDUDE = avrdude -B4
+AVRDUDE = avrdude 
 PROGRAMMER = dragon_isp
 PORT=usb
 ifeq ($(PART),)
 	ifeq ($(MCU),attiny85)
 		PART=t85
+        LFUSE=0xe1
+        HFUSE=0xdf
+        EFUSE=0xff
+	else ifeq ($(MCU),attiny841)
+		PART=t841
         LFUSE=0xe1
         HFUSE=0xdf
         EFUSE=0xff

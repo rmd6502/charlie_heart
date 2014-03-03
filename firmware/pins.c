@@ -17,7 +17,7 @@ static const uint16_t PROGMEM PUE_REG[] = { };
 #endif
 static uint8_t pinModes[sizeof(BITNUM)] = {0};
 
-#define REG(x) (*(volatile uint8_t *)(x))
+#define REG(x) (*(volatile uint8_t *)pgm_read_word(&x))
 
 void pinMode(uint8_t pin, enum Directions direction)
 {
@@ -27,9 +27,9 @@ void pinMode(uint8_t pin, enum Directions direction)
     }
 #endif
     if (direction == OUTPUT) {
-        REG(DDR_REG[pin]) |= pgm_read_byte(&BITNUM[direction]);
+        REG(DDR_REG[pin]) |= pgm_read_byte(&BITNUM[pin]);
     } else {
-        REG(DDR_REG[pin]) &= ~pgm_read_byte(&BITNUM[direction]);
+        REG(DDR_REG[pin]) &= ~pgm_read_byte(&BITNUM[pin]);
 #if defined(PUEA)
         if (direction == INPUT_PULLUP) {
             REG(PUE_REG[pin]) |= pgm_read_byte(&BITNUM[pin]);
