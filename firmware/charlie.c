@@ -47,14 +47,12 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 
 	cli();
 	// interrupt at 50kHz 
-	OCR0A = F_CPU / 400000;
+	OCR0A = (F_CPU/800000);
 	// initialize the timer and interrupt
 	TCNT0 = 0;
 	// Start the timer at PCK/8, so 2 MHz timer clock
 	// with 16 shades, that means 3125 frames/sec
 	// and the interrupt routine has 320 cycles to run, including interrupt and gcc overhead
-	TCCR0A = (2 << WGM00);
-	TCCR0B = (2 << CS00);
 #if __AVR_ATtiny841__
 	TIMSK0 |= _BV(OCIE0A);
 	TIFR0 = _BV(OCF0A);
@@ -71,6 +69,8 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	PCMSK = _BV(PCINT2);
 	GIFR = _BV(PCIF);
 #endif
+	TCCR0A = (2 << WGM00);
+	TCCR0B = (2 << CS00);
 
 	sei();
 }
