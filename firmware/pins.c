@@ -1,3 +1,4 @@
+#include <avr/pgmspace.h>
 #include <avr/io.h>
 #include "pins.h"
 
@@ -14,23 +15,24 @@ static const uint16_t PROGMEM PIN_REG[] = { (uint16_t)&PINB, (uint16_t)&PINB, (u
 static const uint16_t PROGMEM PORT_REG[] = { (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, (uint16_t)&PORTB, };
 static const uint16_t PROGMEM PUE_REG[] = { };
 #endif
-static const uint8_t PROGMEM pinModes[sizeof(BITNUM)] = {0};
+static uint8_t pinModes[sizeof(BITNUM)] = {0};
 
+#define REG(x) (*(volatile uint8_t *)(x))
 
 void pinMode(uint8_t pin, enum Directions direction)
 {
 #if defined(PUEA)
     if (direction != INPUT_PULLUP && pinModes[pin] == INPUT_PULLUP) {
-        PUE_REG[pin] &= ~BITNUM[pin];
+        REG(PUE_REG[pin]) &= ~pgm_read_byte(&BITNUM[pin]);
     }
 #endif
     if (direction == OUTPUT) {
-        DDR_REG[pin] |= BITNUM[direction];
+        REG(DDR_REG[pin]) |= pgm_read_byte(&BITNUM[direction]);
     } else {
-        DDR_REG[pin] &= ~BITNUM[direction];
+        REG(DDR_REG[pin]) &= ~pgm_read_byte(&BITNUM[direction]);
 #if defined(PUEA)
         if (direction == INPUT_PULLUP) {
-            PUE_REG[pin] |= BITNUM[pin];
+            REG(PUE_REG[pin]) |= pgm_read_byte(&BITNUM[pin]);
         }
 #endif
     }
@@ -40,14 +42,14 @@ void pinMode(uint8_t pin, enum Directions direction)
 void digitalWrite(uint8_t pin, uint8_t value)
 {
     if (value) {
-        PORT_REG[pin] |= BITNUM[pin];
+        REG(PORT_REG[pin]) |= pgm_read_byte(&BITNUM[pin]);
     } else {
-        PORT_REG[pin] &= ~BITNUM[pin];
+        REG(PORT_REG[pin]) &= ~pgm_read_byte(&BITNUM[pin]);
     }
 }
 
 uint8_t digitalRead(uint8_t pin)
 {
-    return (PIN_REG[pin] & BITNUM[pin]) ? 1 : 0;
+    return (REG(PIN_REG[pin]) & pgm_read_byte(&BITNUM[pin])) ? 1 : 0;
 }
 
