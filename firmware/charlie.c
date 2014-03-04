@@ -47,8 +47,8 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
     #endif
 
 	cli();
-	// interrupt at 50kHz 
-	OCR0A = (F_CPU/800000);
+	// interrupt at 50kHz with 1/2MHz clock
+	OCR0A = (F_CPU/400000);
 	// initialize the timer and interrupt
 	TCNT0 = 0;
 	// Start the timer at PCK/8, so 2 MHz timer clock
