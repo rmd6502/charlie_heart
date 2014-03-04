@@ -21,6 +21,7 @@ volatile uint8_t button_state = 0;
 static volatile uint8_t button_pin = 0;
 static volatile uint8_t sleep_state = 0;
 volatile uint16_t val = 0;
+static volatile uint8_t numPins = 0;
 
 static volatile LedPins *ledPins;
 
@@ -29,6 +30,7 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	// setup the buffer
 	num_rows = _num_rows;
 	num_columns = _num_columns;
+    numPins = num_rows * num_columns;
 	ledPins = led_pins;
 	buffer = _buffer;
 	button_pin = _button_pin;
@@ -45,14 +47,12 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 
 	cli();
 	// interrupt at 50kHz 
-	OCR0A = F_CPU / 400000;
+	OCR0A = (F_CPU/800000);
 	// initialize the timer and interrupt
 	TCNT0 = 0;
 	// Start the timer at PCK/8, so 2 MHz timer clock
 	// with 16 shades, that means 3125 frames/sec
 	// and the interrupt routine has 320 cycles to run, including interrupt and gcc overhead
-	TCCR0A = (2 << WGM00);
-	TCCR0B = (2 << CS00);
 #if __AVR_ATtiny841__
 	TIMSK0 |= _BV(OCIE0A);
 	TIFR0 = _BV(OCF0A);
@@ -69,6 +69,8 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	PCMSK = _BV(PCINT2);
 	GIFR = _BV(PCIF);
 #endif
+	TCCR0A = (2 << WGM00);
+	TCCR0B = (2 << CS00);
 
 	sei();
 }
@@ -93,8 +95,10 @@ void return_from_sleep()
 
 ISR(TIMER0_COMPA_vect) {
 
-    pinMode(ledPtr->lowpin, INPUT);
-    pinMode(ledPtr->highpin, INPUT);
+    if (ledPtr - ledPins < numPins) {
+        pinMode(ledPtr->lowpin, INPUT);
+        pinMode(ledPtr->highpin, INPUT);
+    }
 	--bufPtr;
 	--ledPtr;
 
@@ -114,8 +118,8 @@ ISR(TIMER0_COMPA_vect) {
 	}
 
 	if (bufPtr == buffer) {
-		bufPtr = (uint8_t *)buffer + num_rows * num_columns;
-		ledPtr = ledPins + num_rows * num_columns;
+		bufPtr = (uint8_t *)buffer + numPins;
+		ledPtr = ledPins + numPins;
 		--timer;
 		if (timer == 0) {
 			timer = 16;
