@@ -8,13 +8,14 @@ PROJECT = charlie_heart2
 MCU = attiny841
 TARGET = $(PROJECT).elf
 CC = avr-gcc
+F_CPU = 8000000
 
 ## Options common to compile, link and assembly rules
 COMMON = -mmcu=$(MCU)
 
 ## Compile options common for all C compilation units.
 CFLAGS = $(COMMON)
-CFLAGS += -Wall -gdwarf-2 -DF_CPU=16000000UL -Os -fsigned-char -fpack-struct -fshort-enums
+CFLAGS += -Wall -gdwarf-2 -DF_CPU=$(F_CPU) -Os -fsigned-char -fpack-struct -fshort-enums
 CFLAGS += -MD -MP -MT $(*F).o -MF dep/$(@F).d --std=c99
 #CFLAGS += -DADC_MODE
 
@@ -39,6 +40,11 @@ ifeq ($(PART),)
         EFUSE=0xff
 	else ifeq ($(MCU),attiny45)
 		PART=t45
+        LFUSE=0xe2
+        HFUSE=0xdf
+        EFUSE=0xff
+	else ifeq ($(MCU),attiny841)
+        PART=t841
         LFUSE=0xe2
         HFUSE=0xdf
         EFUSE=0xff

@@ -172,9 +172,15 @@ void initialize(void)
 	}
 	charlie_init(1,NUM_PINS,ledPins,buffer,BUTTON_PIN);
 	set_sleep_mode(SLEEP_MODE_IDLE);
+
     ADCSRA = 0;
+#if defined(ADMUX)
 	ADMUX = _BV(REFS1) | 0xf;
-	ADCSRA = _BV(ADEN) | _BV(ADSC) | (7 << ADPS0);
+#else
+    ADMUXA = 2 << MUX0;
+    ADMUXB = 0;
+#endif
+    ADCSRA = _BV(ADEN) | _BV(ADSC) | (7 << ADPS0);
 }
 
 uint16_t map(int16_t reading, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max)
@@ -191,7 +197,12 @@ uint16_t pulseCounts()
 	if (!(ADCSRA & _BV(ADSC))) {
 		temperature = ADCL + (ADCH << 8);
         if (temperature < min_temp) temperature = min_temp;
-	    ADMUX = _BV(REFS1) | 0xf;
+#if defined(ADMUX)
+	ADMUX = _BV(REFS1) | 0xf;
+#else
+    ADMUXA = 2 << MUX0;
+    ADMUXB = 0;
+#endif
 		ADCSRA |= _BV(ADSC);
 		pulseCounts = map(temperature, min_temp, max_temp,20,3);
 	}
