@@ -10,14 +10,16 @@
 #define PULSE_COUNTS_PER_STATE (F_CPU/4000000)
 #define SCANNER_COUNTS_PER_STATE (F_CPU/8000000)
 #define ALT_COUNTS_PER_STATE (F_CPU/800000)
+#define PULSE2_COUNTS_PER_STATE 1
+
 #define BUTTON_PIN 6
 
 int16_t countsPerState[] = {
-	0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE, ALT_COUNTS_PER_STATE
+	0, SCANNER_COUNTS_PER_STATE, PULSE_COUNTS_PER_STATE, ALT_COUNTS_PER_STATE, PULSE2_COUNTS_PER_STATE
 };
 
 typedef enum _States {
-	POWEROFF = 0, SCANNER, PULSE, ALTERNATE, NUM_STATES
+	POWEROFF = 0, SCANNER, PULSE, ALTERNATE, PULSE2, NUM_STATES
 } States;
 
 volatile uint8_t buffer[NUM_PINS] = {
@@ -26,6 +28,7 @@ volatile uint8_t buffer[NUM_PINS] = {
 
 void initialize(void);
 uint16_t pulseCounts();
+uint16_t map(int16_t reading, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max);
 
 int8_t mod(int8_t q, int8_t d)
 {
@@ -44,7 +47,7 @@ int main()
 	int16_t count = 0;
 	int16_t counts_per_state = pulseCounts();
 	uint8_t last_button=0;
-	States runState = PULSE;
+	States runState = PULSE2;
 	initialize();
 	while(1) {
 		switch(runState) {
@@ -90,6 +93,16 @@ int main()
 				state = 0;
 			}
 			break;
+		case PULSE2: {
+			if (!(ADCSRA & _BV(ADSC))) {
+				uint16_t reading = ADCL + (ADCH << 8);
+				memset((void *)buffer, map(reading, 0x200, 0x3ff, 0, 15), sizeof(buffer));
+				ADMUXA = 2 << MUX0;
+				ADMUXB = 0;
+				ADCSRA |= _BV(ADSC);
+				break;
+			}
+		}
 		case ALTERNATE: {
 			for (int ledNum = 0; ledNum < NUM_PINS-1; ledNum += 2) {
 				buffer[ledNum] = state;
@@ -133,8 +146,18 @@ int main()
 						}
 						if (runState == PULSE) {
 							counts_per_state = pulseCounts();
+							ADCSRA &= ~_BV(ADSC);
+							ADMUXA = 12 << MUX0;
+							ADMUXB = 1 << REFS0;
+							ADCSRA |= _BV(ADSC);
 						} else {
 							counts_per_state = countsPerState[runState];	
+						}
+						if (runState == PULSE2) {
+							ADCSRA &= ~_BV(ADSC);
+							ADMUXA = 2 << MUX0;
+							ADMUXB = 0;
+							ADCSRA |= _BV(ADSC);
 						}
 						
 						if (runState == POWEROFF) {
@@ -177,8 +200,8 @@ void initialize(void)
 #if defined(ADMUX)
 	ADMUX = _BV(REFS1) | 0xf;
 #else
-    ADMUXA = 2 << MUX0;
-    ADMUXB = 0;
+    ADMUXA = 12 << MUX0;
+    ADMUXB = 1 << REFS0;
 #endif
     ADCSRA = _BV(ADEN) | _BV(ADSC) | (7 << ADPS0);
 }
@@ -187,6 +210,7 @@ uint16_t map(int16_t reading, int16_t in_min, int16_t in_max, int16_t out_min, i
 {
 	return (reading - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
 uint16_t pulseCounts()
 {
 	static uint16_t temperature = 0;
@@ -200,11 +224,11 @@ uint16_t pulseCounts()
 #if defined(ADMUX)
 	ADMUX = _BV(REFS1) | 0xf;
 #else
-    ADMUXA = 2 << MUX0;
-    ADMUXB = 0;
+    ADMUXA = 12 << MUX0;
+    ADMUXB = 1 << REFS0;
 #endif
 		ADCSRA |= _BV(ADSC);
-		pulseCounts = map(temperature, min_temp, max_temp,20,3);
+		pulseCounts = map(temperature, min_temp, max_temp,10,3);
 	}
 	return pulseCounts;
 }

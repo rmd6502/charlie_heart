@@ -34,6 +34,7 @@ void charlie_init(uint8_t _num_rows, uint8_t _num_columns, LedPins *led_pins, vo
 	ledPins = led_pins;
 	buffer = _buffer;
 	button_pin = _button_pin;
+	pinMode(button_pin, INPUT_PULLUP);
 
 	bufPtr = (uint8_t *)buffer + num_rows * num_columns;
 	ledPtr = ledPins + num_rows * num_columns;
@@ -84,7 +85,7 @@ void prepare_for_sleep()
     DDRA = 0;
 #endif
 	DDRB = 0;
-    digitalWrite(button_pin, 1);
+    pinMode(button_pin, INPUT_PULLUP);
 }
 
 void return_from_sleep()
@@ -124,8 +125,7 @@ ISR(TIMER0_COMPA_vect) {
 		if (timer == 0) {
 			timer = 16;
 			++cycle_count;
-            pinMode(button_pin, INPUT);
-            digitalWrite(button_pin, 1);
+            pinMode(button_pin, INPUT_PULLUP);
 		}
 	}
 }
