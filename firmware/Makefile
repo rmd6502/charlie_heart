@@ -29,7 +29,7 @@ LDFLAGS +=  -Wl,-Map=$(PROJECT).map
 
 ## Programmer settings
 AVRDUDE = avrdude -B4
-PROGRAMMER = dragon_isp
+PROGRAMMER = avrispmkii
 PORT=usb
 ifeq ($(PART),)
 	ifeq ($(MCU),attiny85)
